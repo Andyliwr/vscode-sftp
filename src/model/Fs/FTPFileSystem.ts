@@ -1,9 +1,13 @@
 import * as fs from 'fs';
 import * as FileStatus from 'stat-mode';
+import * as http from 'http';
+import * as querystring from 'querystring';
 import FileSystem, { IFileEntry, FileType, IStats, IStreamOption } from './FileSystem';
 import RemoteFileSystem from './RemoteFileSystem';
 import { IClientOption } from '../Client/RemoteClient';
 import FTPClient from '../Client/FTPClient';
+const ANDYLIWR_FTP_HOST = 'localhost'
+const ANDYLIWR_FTP_PORT = 3000
 
 export default class FTPFileSystem extends RemoteFileSystem {
   static getFileType(type) {
@@ -61,15 +65,54 @@ export default class FTPFileSystem extends RemoteFileSystem {
   }
 
   put(input: fs.ReadStream | Buffer, path, option?: IStreamOption): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.ftp.put(input, path, err => {
-        if (err) {
-          reject(err);
-          return;
-        };
 
-        resolve();
+    return new Promise<void>((resolve, reject) => {
+      // read nodejs file stream
+      const stream = fs.createReadStream('D:\\PROJECT\\test_project\\a.txt', option)
+      stream.setEncoding('utf8');
+      stream.on('data', (chunk) => {
+        // send http request
+        let postData = querystring.stringify({
+          filedata: chunk,
+          path: path
+        })
+
+        let options: http.RequestOptions = {
+          host: ANDYLIWR_FTP_HOST,
+          port: ANDYLIWR_FTP_PORT,
+          method: "POST",
+          path: '/save',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Content-Length': Buffer.byteLength(postData)
+          }
+        }
+        const req = http.request(options, (res) => {
+          res.setEncoding('utf8');
+          res.on('data', (chunk) => {
+          });
+          res.on('end', () => {
+          });
+        });
+
+        req.on('error', (err) => {
+          reject(err);
+        });
+
+        // put postData into request body
+        req.write(postData);
+        req.end(function (res) {
+          resolve();
+        });
       });
+      // this.ftp.put(input, path, err => {
+      //   if (err) {
+      //     reject(err);
+      //     return;
+      //   };
+
+      //   resolve();
+      // });
     });
   }
 

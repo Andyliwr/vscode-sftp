@@ -9,7 +9,7 @@
   },
   "bugs": {
     "url": "https://github.com/Andyliwr/vscode-sftp/issues",
-    "email": "Andyliwr@outlook.com"
+    "email": "andyliwr@outlook.com"
   },
   "homepage": "https://github.com/Andyliwr/vscode-sftp.git",
   "repository": {
@@ -123,6 +123,7 @@
     "glob": "^7.1.2",
     "joi": "^10.6.0",
     "minimatch": "^3.0.4",
+    "querystring": "^0.2.0",
     "ssh2": "^0.5.4",
     "stat-mode": "^0.2.2",
     "upath": "^1.0.0"

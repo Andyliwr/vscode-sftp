@@ -118,7 +118,7 @@ export function addConfig(configPath) {
       ...defaultConfig,
       ...config,
       ignore: localIgnore.concat(remoteIgnore),
-      configRoot,
+      configRoot
     };
     const triePath = getPathRelativeWorkspace(configRoot);
     configTrie.add(triePath, fullConfig);
